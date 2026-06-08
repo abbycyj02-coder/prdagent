@@ -1,161 +1,224 @@
-# PRD 生成 Agent MVP
+# PRD Agent MVP
 
-An AI-powered PRD generation agent that turns rough product ideas into structured, review-ready PRD documents with clarification, quality review, and Word/PDF export.
+An AI-powered PRD generation agent that turns rough product ideas into structured, review-ready PRD documents with clarification, completeness checking, quality review, and Word/PDF export.
 
-一个本地可运行的 PRD 生成 Agent MVP。用户输入一句产品想法或关键词后，Agent 会通过产品类型识别、需求追问、完整度检查、PRD 生成和质量评审，输出标准化的中文 PRD，并支持导出 Word 和 PDF。
+PRD Agent 是一个面向产品经理的本地可运行 AI Agent MVP。用户只需要输入一句产品想法或关键词，系统会自动识别产品类型、追问缺失信息、检查需求完整度，并生成结构化中文 PRD 文档。最终结果支持在线预览、质量评审、编辑以及 Word / PDF 导出。
 
-当前版本适合验证“从模糊需求到可评审 PRD”的核心效果，已接入 OpenAI LLM，同时保留本地规则和模板回退能力。
+该项目的核心目标是验证：AI 是否可以辅助产品经理完成从“模糊需求”到“可评审 PRD 初稿”的工作流。
 
-## 核心能力
+---
 
-- 输入关键词或一句产品想法，自动生成完整 PRD，而不是简单摘要。
-- 支持软件 / AI Agent、智能硬件、政企合规三类需求识别。
-- 支持像 ChatGPT 一样多轮追问，用户可以自然语言回答。
-- 信息不足时不编造细节，在文档中明确写出“请补充 xxx 信息”。
-- 生成内容按标准 PRD 主线组织：用户、场景、问题、MVP 范围、功能、验收、风险。
-- 输出质量评审：完整性、清晰度、可开发性、可测试性、风险覆盖等维度。
-- 支持 Word 和 PDF 导出。
-- Word 标准化字体：中文宋体，英文 Calibri，字号小五。
-- 本地保存历史会话，便于继续补充、重新生成和导出。
+## Core Features / 核心能力
 
-## 运行方式
+### 1. Product Requirement Understanding / 需求理解
 
-### 1. 进入项目目录
+- 支持输入一句产品想法或关键词，自动识别产品类型。
+- 当前支持三类 PRD 场景：
+  - 软件 / AI Agent 产品
+  - 智能硬件产品
+  - 政企 / ToB / 合规类系统
+- 支持手动修改产品类型和子类型，避免自动分类错误影响后续生成。
 
-```bash
-cd /Users/abby/Desktop/prdagent
+### 2. Multi-agent PRD Workflow / 多 Agent 工作流
+
+系统将产品经理写 PRD 的过程拆解为多个模块：
+
+```text
+User Input
+  -> Router Agent
+  -> Schema / Completeness Checker
+  -> Clarification Agent
+  -> Chat Extractor
+  -> PRD Generator
+  -> Review Agent
+  -> Export Service
 ```
 
-### 2. 配置环境变量
+每个模块负责一个独立任务，降低单次 LLM 生成带来的不稳定性。
 
-复制示例配置：
+### 3. Clarification & Completeness Check / 追问与完整度检查
+
+- 当需求信息不足时，系统会生成少量关键追问。
+- 用户可以像和 ChatGPT 对话一样自然语言补充需求。
+- 系统会将用户回答沉淀为结构化字段。
+- 对未知信息不会直接编造，而是在文档中标记“请补充 xxx 信息”。
+
+### 4. PRD Generation / PRD 生成
+
+生成内容按照标准 PRD 主线组织，包括：
+
+- 产品背景
+- 目标用户
+- 使用场景
+- 用户痛点
+- 产品目标
+- MVP 范围
+- 功能模块
+- 用户流程
+- 验收标准
+- 风险与待确认问题
+
+### 5. Review & Export / 质量评审与导出
+
+- 支持从完整性、清晰度、可开发性、可测试性、风险覆盖等维度进行 PRD 质量评审。
+- 支持导出 Word 和 PDF。
+- Word 导出采用标准化字体设置：中文宋体，英文 Calibri，字号小五。
+- 本地保存历史会话，方便继续补充、重新生成和导出。
+
+---
+
+## Project Highlights / 项目亮点
+
+- 设计了从需求识别、信息补全、PRD 生成到质量评审的完整 Agent 工作流。
+- 使用 Schema 控制追问和完整度检查，避免完全依赖模型自由发挥。
+- 通过产品类型路由，让不同产品方向使用不同 PRD 结构。
+- 在信息不足时显式标记待补充内容，减少 LLM 幻觉。
+- 实现 Word / PDF 导出，使生成结果从聊天文本变成可交付文档。
+- LLM 调用失败时保留本地规则和模板回退能力，保证 MVP 可运行。
+
+---
+
+## Tech Stack / 技术栈
+
+- Backend: Python
+- Frontend: HTML, CSS, JavaScript
+- LLM: OpenAI API
+- Storage: Local JSON session storage
+- Export: Word / PDF export service
+- Architecture: Multi-agent workflow + Schema-based requirement checking
+
+---
+
+## Getting Started / 运行方式
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/abbycyj02-coder/prdagent.git
+cd prdagent
+```
+
+### 2. Configure environment variables
+
+Copy the example environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-编辑 `.env`：
+Edit `.env`:
 
 ```text
-OPENAI_API_KEY=sk-proj-your-key-here
-OPENAI_MODEL=gpt-5.4
+OPENAI_API_KEY=your-openai-api-key
+OPENAI_MODEL=your-model-name
 OPENAI_TIMEOUT=240
 OPENAI_MAX_COMPLETION_TOKENS=12000
 PRD_AGENT_USE_LLM=1
 ```
 
-注意：不要把真实 API Key 提交到 GitHub。`.env` 已被 `.gitignore` 忽略。
+> Do not commit your real API key to GitHub. The `.env` file is ignored by `.gitignore`.
 
-### 3. 启动服务
+### 3. Start the service
 
 ```bash
 ./run.sh
 ```
 
-也可以直接运行：
+Or run directly:
 
 ```bash
 python3 -m backend.server
 ```
 
-### 4. 打开网页
+### 4. Open the web app
 
 ```text
 http://127.0.0.1:8787
 ```
 
-## 使用步骤
+---
 
-1. 在左侧输入产品想法，例如“做一个数字人生成平台”。
-2. 点击“开始分析”，系统会识别产品类型和子类型。
-3. 如果分类不准，可以手动修改产品类型和子类型。
-4. 在“需求访谈”里自然语言回答 Agent 的追问。
-5. 信息足够后点击“生成 PRD”，也可以在聊天里输入“可以了，生成 PRD”。
-6. 在右侧预览和编辑 PRD。
-7. 点击“重新评审”更新质量评分。
-8. 点击“导出 Word”或“导出 PDF”下载文档。
+## Usage / 使用步骤
 
-## 简要设计思路
+1. Enter a product idea, such as “做一个数字人生成平台”.
+2. Click “开始分析”.
+3. The system identifies the product type and subtype.
+4. If the classification is inaccurate, manually adjust it.
+5. Answer the clarification questions in natural language.
+6. Click “生成 PRD” or type “可以了，生成 PRD”.
+7. Preview and edit the PRD on the right side.
+8. Click “重新评审” to update the quality score.
+9. Export the final document as Word or PDF.
 
-整体流程按一个产品经理写 PRD 的真实工作流拆成多个 Agent / 模块：
+---
 
-```text
-用户输入
-  -> Router Agent：识别产品类型和子类型
-  -> Schema / Completeness Checker：判断信息完整度和缺失字段
-  -> Clarification Agent：生成少量关键追问
-  -> Chat Extractor：把自然语言回答沉淀为结构化字段
-  -> PRD Generator：按产品类型生成标准 PRD
-  -> Review Agent：评审文档质量并给出改进建议
-  -> Export Service：导出 Word / PDF
-```
-
-设计重点：
-
-- 用 Schema 控制追问和完整度，避免完全依赖模型自由发挥。
-- 用强提示词约束 PRD 主线，减少章节堆砌和逻辑散乱。
-- 对未知信息使用“请补充 xxx 信息”，避免把模型推断伪装成事实。
-- LLM 调用失败时自动回退到本地规则和模板，保证 MVP 可跑通。
-- 导出层独立处理 Word / PDF，方便后续扩展排版和企业模板。
-
-## 代码结构
+## Code Structure / 代码结构
 
 ```text
 backend/
-  server.py                         # 本地 HTTP API 和静态文件服务
-  models.py                         # 会话数据结构
-  store.py                          # 本地 JSON 持久化
+  server.py                         # Local HTTP API and static file service
+  models.py                         # Session data models
+  store.py                          # Local JSON persistence
   agents/
-    router_agent.py                 # 产品类型识别
-    schema.py                       # 三类 PRD 字段 Schema
-    completeness_checker.py         # 完整度评分
-    clarification_agent.py          # 追问生成
-    chat_agent.py                   # 对话提取和生成意图判断
-    prd_generator.py                # PRD 生成
-    review_agent.py                 # 质量评审
+    router_agent.py                 # Product type routing
+    schema.py                       # PRD field schemas
+    completeness_checker.py         # Completeness scoring
+    clarification_agent.py          # Clarification question generation
+    chat_agent.py                   # Chat extraction and generation intent detection
+    prd_generator.py                # PRD generation
+    review_agent.py                 # PRD quality review
   services/
-    llm_service.py                  # OpenAI 调用封装
-    export_service.py               # Word / PDF 导出
+    llm_service.py                  # OpenAI API wrapper
+    export_service.py               # Word / PDF export
 public/
-  index.html                        # Web 工作台
-  app.js                            # 前端交互逻辑
-  style.css                         # 前端样式
-templates/                          # 本地回退模板
-prompts/                            # 提示词草稿
-scripts/                            # 辅助脚本
+  index.html                        # Web workspace
+  app.js                            # Frontend interaction logic
+  style.css                         # Frontend styles
+templates/                          # Local fallback templates
+prompts/                            # Prompt drafts
+scripts/                            # Helper scripts
 docs/
-  prd_agent_mvp_operation_guide.md  # MVP 操作步骤文档
+  prd_agent_mvp_operation_guide.md  # MVP operation guide
 ```
 
-## API 概览
+---
 
-| 接口 | 方法 | 说明 |
+## API Overview / API 概览
+
+| Endpoint | Method | Description |
 |---|---|---|
-| `/api/health` | GET | 服务健康检查 |
-| `/api/prd/create` | POST | 创建 PRD 会话并识别类型 |
-| `/api/prd/chat` | POST | 对话式补充需求或触发生成 |
-| `/api/prd/answer` | POST | 提交结构化追问答案 |
-| `/api/prd/update-type` | POST | 手动修改产品类型 |
-| `/api/prd/generate` | POST | 生成 PRD 并评审 |
-| `/api/prd/review` | POST | 对编辑后的 PRD 重新评审 |
-| `/api/prd/export` | GET | 导出 Word 或 PDF |
-| `/api/prd/history` | GET | 查看历史会话 |
-| `/api/prd/session/{id}` | GET | 查看会话详情 |
+| `/api/health` | GET | Service health check |
+| `/api/prd/create` | POST | Create a PRD session and classify product type |
+| `/api/prd/chat` | POST | Add requirements through conversation or trigger generation |
+| `/api/prd/answer` | POST | Submit structured clarification answers |
+| `/api/prd/update-type` | POST | Manually update product type |
+| `/api/prd/generate` | POST | Generate PRD and run quality review |
+| `/api/prd/review` | POST | Re-review an edited PRD |
+| `/api/prd/export` | GET | Export PRD as Word or PDF |
+| `/api/prd/history` | GET | View session history |
+| `/api/prd/session/{id}` | GET | View session details |
 
-## 运行数据
+---
 
-以下内容是本地运行生成的，不会提交到 GitHub：
+## Local Runtime Data / 本地运行数据
 
-- `.env`
-- `data/sessions.json`
-- `exports/*.docx`
-- `exports/*.pdf`
-- 原始需求 Word 文档
+The following files are generated locally and should not be committed to GitHub:
 
-## 后续可扩展方向
+```text
+.env
+data/sessions.json
+exports/*.docx
+exports/*.pdf
+raw requirement documents
+```
 
-- 迁移到 OpenAI Responses API，增强工具调用和长上下文状态管理。
-- 增加企业自定义 PRD 模板和品牌排版。
-- 增加人工确认清单，把“请补充 xxx 信息”转成可勾选事项。
-- 增加版本对比、批注和多人协作。
-- 支持将 PRD 继续拆解为用户故事、研发任务和测试用例。
+---
+
+## Future Improvements / 后续可扩展方向
+
+- Migrate to OpenAI Responses API for better tool calling and long-context state management.
+- Add enterprise-specific PRD templates and branded document styles.
+- Convert missing information into a checklist for human confirmation.
+- Add version comparison, comments, and collaborative review.
+- Extend PRD output into user stories, development tasks, and test cases.
+- Add more product categories and industry-specific PRD templates.
