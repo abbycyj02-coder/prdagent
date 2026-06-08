@@ -1,5 +1,7 @@
 # PRD 生成 Agent MVP
 
+An AI-powered PRD generation agent that turns rough product ideas into structured, review-ready PRD documents with clarification, quality review, and Word/PDF export.
+
 一个本地可运行的 PRD 生成 Agent MVP。用户输入一句产品想法或关键词后，Agent 会通过产品类型识别、需求追问、完整度检查、PRD 生成和质量评审，输出标准化的中文 PRD，并支持导出 Word 和 PDF。
 
 当前版本适合验证“从模糊需求到可评审 PRD”的核心效果，已接入 OpenAI LLM，同时保留本地规则和模板回退能力。
