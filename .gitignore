@@ -1,0 +1,19 @@
+.env
+.env.local
+.env.*.local
+.prd-agent-server.pid
+.prd-agent-server.log
+__pycache__/
+*.pyc
+.DS_Store
+backend/.DS_Store
+docs/.DS_Store
+
+# Local runtime data
+data/
+exports/
+
+# Local/private source documents and rendered checks
+PRD生成Agent需求文档_详细版.docx
+docs/*.docx
+docs/rendered_mvp_check/

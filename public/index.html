@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PRD 生成 Agent MVP</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-row">
+          <div class="brand-mark">P</div>
+          <div>
+            <h1>PRD Agent</h1>
+            <p>MVP v0.1</p>
+          </div>
+        </div>
+
+        <div class="sidebar-actions">
+          <button class="secondary full" id="newBtn">新建会话</button>
+        </div>
+
+        <div class="history-title">历史记录</div>
+        <div id="historyList" class="history-list"></div>
+      </aside>
+
+      <main class="workspace">
+        <section class="topbar">
+          <div>
+            <div class="eyebrow">当前闭环</div>
+            <h2>输入 -> 分类 -> 追问 -> 生成 -> 评审 -> 导出</h2>
+          </div>
+          <div class="health" id="health">服务检查中</div>
+        </section>
+
+        <section class="grid">
+          <div class="left-pane">
+            <section class="panel input-panel">
+              <div class="panel-head">
+                <h3>产品想法</h3>
+                <span class="status-pill" id="sessionStatus">未创建</span>
+              </div>
+              <textarea
+                id="ideaInput"
+                placeholder="输入一句产品想法，例如：我想做一个帮产品经理生成 PRD 的 AI Agent"
+              ></textarea>
+              <div class="example-row">
+                <button class="ghost" data-example="我想做一个 AI Agent，帮产品经理把一句话想法生成结构化 PRD，并支持质量评审和 Word 导出。">软件 Agent</button>
+                <button class="ghost" data-example="我想做一款 AR 眼镜，可以帮用户实时翻译和记录会议，需要考虑续航、重量、麦克风、显示和隐私提示。">智能硬件</button>
+                <button class="ghost" data-example="我想做一个政府审批系统，支持企业提交材料、工作人员审核、领导审批、日志审计和政务云部署。">政企审批</button>
+              </div>
+              <div class="button-row">
+                <button class="primary" id="createBtn">开始分析</button>
+                <button class="secondary" id="clearBtn">清空</button>
+              </div>
+              <p class="hint">请勿输入涉密信息、真实身份证号、客户隐私或未授权商业机密。</p>
+              <p class="hint">只输入关键词也可以生成完整 PRD；长文档生成通常需要 1-4 分钟。</p>
+            </section>
+
+            <section class="panel" id="routePanel">
+              <div class="panel-head">
+                <h3>需求理解</h3>
+                <span id="confidenceBadge" class="status-pill muted">待识别</span>
+              </div>
+              <div id="routeContent" class="empty-state">创建会话后显示产品类型、子类型和缺失信息。</div>
+            </section>
+
+            <section class="panel" id="questionPanel">
+              <div class="panel-head">
+                <h3>需求访谈</h3>
+                <span id="scoreBadge" class="status-pill muted">0/100</span>
+              </div>
+              <div class="progress-track">
+                <div id="scoreBar" class="progress-bar"></div>
+              </div>
+              <div id="questionContent" class="chat-empty">创建会话后，Agent 会像产品访谈一样追问关键问题。</div>
+            </section>
+          </div>
+
+          <div class="right-pane">
+            <section class="panel preview-panel">
+              <div class="panel-head">
+                <h3>PRD 预览</h3>
+                <div class="button-row compact">
+                  <button class="secondary" id="generateBtn">生成 PRD</button>
+                  <button class="secondary" id="reviewBtn">重新评审</button>
+                </div>
+              </div>
+              <textarea id="prdPreview" class="prd-preview" placeholder="生成后的 PRD 草稿会显示在这里，可直接编辑后重新评审，再导出 Word / PDF。"></textarea>
+            </section>
+
+            <section class="panel review-panel">
+              <div class="panel-head">
+                <h3>质量评审</h3>
+                <div class="button-row compact">
+                  <button class="secondary" id="exportDocxBtn">导出 Word</button>
+                  <button class="secondary" id="exportPdfBtn">导出 PDF</button>
+                </div>
+              </div>
+              <div id="reviewContent" class="empty-state">生成 PRD 后显示完整性、清晰度、可开发性、风险和建议。</div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
